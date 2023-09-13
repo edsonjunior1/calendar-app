@@ -22,7 +22,19 @@ export class CalendarService {
 
   list(date: Date): Observable<Reminder[]> {
     console.log(date);
-    return of(this.reminders);
+
+    const currentMonth = date.getMonth();
+    const currentYear = date.getFullYear();
+
+    const remindersForMonth = this.reminders.filter((reminder: Reminder) => {
+      const reminderDate = new Date(reminder.dateTime);
+      return (
+        reminderDate.getMonth() === currentMonth &&
+        reminderDate.getFullYear() === currentYear
+      );
+    });
+
+    return of(remindersForMonth);
   }
 
   delete(reminderId: string): boolean {
