@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { Reminder } from 'src/app/interfaces/reminder';
+import { EventService } from './../../services/eventService.service';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable, Subject, forkJoin } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { Reminder, WeatherResponse } from 'src/app/interfaces/reminder';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { WeatherService } from 'src/app/services/weather.service';
-import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
 
 @Component({
@@ -17,18 +18,26 @@ export class CalendarComponent implements OnInit, OnDestroy {
   public currentMonth: Date;
   public calendarDays: any[];
   public actualCurrentMonth: string;
-  public daysOfWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
+  public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  public weatherInfo$: Observable<WeatherResponse>;
+  public weatherResp: any;
 
   constructor(
     private calendarService: CalendarService,
     private weatherService: WeatherService,
     private matDialog: MatDialog,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private eventService: EventService
   ) { }
 
   ngOnInit(): void {
     this.initializeCalendar();
+
+    this.eventService.onReminderUpdated().pipe(takeUntil(this.onDestroy$)).subscribe(() => {
+      // Atualize a lista de lembretes quando o evento for disparado
+      this.fetchAndDisplayReminders();
+    });
+
   }
 
   ngOnDestroy(): void {
@@ -44,7 +53,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.updateMonth(1);
   }
 
-  openReminderForm(reminder?: Reminder): void {
+  openReminderForm(reminder?: Reminder[]): void {
     this.matDialog.open(ReminderFormComponent, {
       data: {
         reminder,
@@ -82,9 +91,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
               weather: this.getWeather(reminder.city),
             });
           }
+          // this.cd.detectChanges();
         });
       });
   }
+
 
   private generateCalendar(): void {
     this.calendarDays = this.generateCalendarDays(this.currentMonth);
@@ -114,8 +125,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  private getWeather(city: string): any {
+  private getWeather(city: string): Observable<WeatherResponse> {
     return this.weatherService.getWeatherInformation(city);
   }
 

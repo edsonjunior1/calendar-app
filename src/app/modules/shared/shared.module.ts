@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { EventService } from '../../services/eventService.service';
 
 
 const MATERIAL_MODULES = [
@@ -21,6 +22,9 @@ const MATERIAL_MODULES = [
   ],
   exports: [
     ...MATERIAL_MODULES,
+  ],
+  providers: [
+    EventService
   ]
 })
 export class SharedModule { }

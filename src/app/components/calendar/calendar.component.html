@@ -27,8 +27,7 @@
       <div
         [ngClass]="{
           'calendar-cell': true,
-          'other-month': day.isOtherMonth,
-          'today': day.isToday
+          'other-month': day.isOtherMonth
         }"
         (click)="openReminderForm(day)">
         <span [ngClass]="{'other-month': day.isOtherMonth}" class="day-number">{{ day.day }}</span>
@@ -39,7 +38,7 @@
               <div class="reminder-time">{{ reminder.time }}</div>
               <div class="reminder-city">{{ reminder.city }}</div>
               <div class="reminder-text">{{ reminder.text }}</div>
-              <div class="reminder-weather">{{ reminder.weather }}</div>
+              <div class="reminder-weather">{{ reminder.weather.main }}, {{ reminder.weather.description }}</div>
             </div>
           </div>
         </ng-container>

@@ -1,4 +1,4 @@
-$primary-color: #237ef6;
+$primary-color: #94c2fd;
 $secondary-color: #4693f7;
 $background-color: #f4f4f4;
 $border-color: #ccc;
@@ -59,6 +59,30 @@ $light-gray: #DCDCDC;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-gap: 5px;
+
+    .reminders {
+      .reminder {
+        .reminder-time {
+         color:red;
+        }
+
+        .reminder-city {
+          color:red;
+          // Estilo para a classe reminder-city
+        }
+
+        .reminder-text {
+          color:red;
+          // Estilo para a classe reminder-text
+        }
+
+        .reminder-weather {
+          color:red;
+          // Estilo para a classe reminder-weather
+        }
+      }
+    }
+
   }
 
   .calendar-cell {
