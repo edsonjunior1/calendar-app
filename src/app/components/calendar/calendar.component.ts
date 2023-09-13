@@ -1,11 +1,10 @@
-import { EventService } from './../../services/eventService.service';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subject, forkJoin } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import { Reminder, WeatherResponse } from 'src/app/interfaces/reminder';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Subject, Observable, forkJoin } from 'rxjs';
+import { takeUntil, map } from 'rxjs/operators';
+import { Reminder } from 'src/app/interfaces/reminder';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { WeatherService } from 'src/app/services/weather.service';
+import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
 
 @Component({
@@ -18,26 +17,17 @@ export class CalendarComponent implements OnInit, OnDestroy {
   public currentMonth: Date;
   public calendarDays: any[];
   public actualCurrentMonth: string;
-  public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  public weatherInfo$: Observable<WeatherResponse>;
-  public weatherResp: any;
+  public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednsday', 'Thursday', 'Friday', 'Saturday'];
 
   constructor(
     private calendarService: CalendarService,
     private weatherService: WeatherService,
     private matDialog: MatDialog,
-    private cd: ChangeDetectorRef,
-    private eventService: EventService
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.initializeCalendar();
-
-    this.eventService.onReminderUpdated().pipe(takeUntil(this.onDestroy$)).subscribe(() => {
-      // Atualize a lista de lembretes quando o evento for disparado
-      this.fetchAndDisplayReminders();
-    });
-
   }
 
   ngOnDestroy(): void {
@@ -53,7 +43,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.updateMonth(1);
   }
 
-  openReminderForm(reminder?: Reminder[]): void {
+  openReminderForm(reminder?: Reminder): void {
     this.matDialog.open(ReminderFormComponent, {
       data: {
         reminder,
@@ -77,25 +67,37 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.calendarService.list(this.currentMonth)
       .pipe(takeUntil(this.onDestroy$))
       .subscribe((reminders: Reminder[]) => {
-        reminders.forEach((reminder: Reminder) => {
-          const dayOfMonth = new Date(reminder.dateTime).getDate();
-          const calendarCell = this.calendarDays.find(cell => cell.day === dayOfMonth);
+        const requests = reminders.map((reminder: Reminder) => {
+          return this.getWeather(reminder.city)
+            .pipe(
+              takeUntil(this.onDestroy$),
+              map((weatherData: any) => {
+                return {
+                  ...reminder,
+                  weather: weatherData.weatherInfo,
+                };
+              })
+            );
+        });
 
-          if (calendarCell) {
-            if (!calendarCell.reminders) {
-              calendarCell.reminders = [];
+        forkJoin(requests).subscribe((remindersWithWeather: Reminder[]) => {
+          remindersWithWeather.forEach((reminder: Reminder) => {
+            const dayOfMonth = new Date(reminder.dateTime).getDate();
+            const calendarCell = this.calendarDays.find(cell => cell.day === dayOfMonth);
+
+            if (calendarCell) {
+              if (!calendarCell.reminders) {
+                calendarCell.reminders = [];
+              }
+
+              calendarCell.reminders.push(reminder);
             }
+          });
 
-            calendarCell.reminders.push({
-              ...reminder,
-              weather: this.getWeather(reminder.city),
-            });
-          }
-          // this.cd.detectChanges();
+          this.cd.detectChanges(); // Atualizar a visualização após o carregamento
         });
       });
   }
-
 
   private generateCalendar(): void {
     this.calendarDays = this.generateCalendarDays(this.currentMonth);
@@ -125,7 +127,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getWeather(city: string): Observable<WeatherResponse> {
+  private getWeather(city: string): Observable<any> {
     return this.weatherService.getWeatherInformation(city);
   }
 

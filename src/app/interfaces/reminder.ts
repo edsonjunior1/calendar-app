@@ -1,8 +1,4 @@
 export interface Reminder {
-  data: ReminderOptions[];
-}
-
-export interface ReminderOptions {
   id?: string;
   text: string;
   dateTime: Date;

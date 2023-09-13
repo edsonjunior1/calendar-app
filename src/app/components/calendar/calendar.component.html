@@ -35,15 +35,16 @@
         <ng-container *ngIf="day.reminders && day.reminders.length > 0">
           <div class="reminders">
             <div *ngFor="let reminder of day.reminders" class="reminder">
-              <div class="reminder-time">{{ reminder.time }}</div>
+              <div class="reminder-time">{{ reminder.dateTime | date: 'HH:mm' }}</div>
               <div class="reminder-city">{{ reminder.city }}</div>
               <div class="reminder-text">{{ reminder.text }}</div>
-              <div class="reminder-weather">{{ reminder.weather.main }}, {{ reminder.weather.description }}</div>
+              <div class="reminder-weather">{{ reminder.weatherInfo.main }}, {{ reminder.weatherInfo.description }}</div>
             </div>
           </div>
         </ng-container>
       </div>
     </ng-container>
   </div>
+
 </div>
 

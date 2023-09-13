@@ -16,7 +16,7 @@ export class CalendarService {
   ) { }
 
   addReminder(data: Reminder): Observable<Reminder[]> {
-    this.weatherService.getWeatherInformation(data.data[0].city).subscribe((weatherInfo) => {
+    this.weatherService.getWeatherInformation(data.city).subscribe((weatherInfo) => {
       const reminderWithWeather = { ...data, weather: weatherInfo };
 
       this.reminders.push(reminderWithWeather);
@@ -41,7 +41,6 @@ export class CalendarService {
   }
 
   list(date: Date): Observable<Reminder[]> {
-
     const currentMonth = date.getMonth();
     const currentYear = date.getFullYear();
 
