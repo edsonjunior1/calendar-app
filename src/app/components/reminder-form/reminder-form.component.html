@@ -1,1 +1,32 @@
-<p>Reminder form will be here :)</p>
+<section class="reminder-modal-backdrop">
+  <div class="reminder-form">
+    <div class="modal-header">
+      <h2 *ngIf="!this.data.id">Add Reminder</h2>
+      <h2 *ngIf="this.data.id">Edit Reminder</h2>
+      <button mat-icon-button (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <form [formGroup]="form" autocomplete="off">
+      <div class="form-group">
+        <label for="text" cla0ss="text">Reminder: </label>
+        <input type="text" id="text" formControlName="text" maxlength="30" required>
+      </div>
+      <div class="form-group">
+        <label for="date">Date:</label>
+        <input type="date" id="date" formControlName="dateDay" required>
+      </div>
+      <div class="form-group">
+        <label for="time">Time:</label>
+        <input type="time" id="time" formControlName="dateTime" required>
+      </div>
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" formControlName="city" required>
+      </div>
+      <div class="save-reminder">
+        <button [disabled]="form.invalid" (click)="saveReminder()" type="submit">Save Reminder</button>
+      </div>
+    </form>
+  </div>
+</section>

@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReminderFormComponent } from './reminder-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../../modules/shared/shared.module';
 
 
 
@@ -9,6 +11,8 @@ import { ReminderFormComponent } from './reminder-form.component';
   exports: [ReminderFormComponent],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    SharedModule
   ]
 })
 export class ReminderFormModule { }
