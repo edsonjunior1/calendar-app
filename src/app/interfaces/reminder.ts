@@ -3,11 +3,10 @@ export interface Reminder {
   text: string;
   dateTime: string;
   dateDay: Date;
-  color: string;
+  color?: string;
   city?: string;
   weatherInfo?: WeatherResponse;
-  calendarDays: any[];
-  currentMonth: Date;
+  calendarDays?: any[];
 }
 
 export interface WeatherResponse {

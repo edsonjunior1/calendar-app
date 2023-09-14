@@ -17,16 +17,13 @@ export class CalendarService {
     private eventService: EventService
   ) { }
 
-  addReminder(data: Reminder, calendarDays: any[], currentMonth: Date): void {
+  addReminder(data: Reminder, calendarDays: any[]): void {
     this.weatherService.getWeatherInformation(data.city).subscribe((weatherInfo) => {
       const reminderWithWeather = { ...data, weather: weatherInfo };
 
-      // Adicione o lembrete à lista de lembretes no serviço
       this.reminders.push(reminderWithWeather);
 
-      // Atualize o this.calendarDays aqui
       const dataDay = new Date(data.dateDay + `T${data.dateTime}:00`);
-
       const dayOfMonth = dataDay.getDate();
       const calendarCell = calendarDays.find((cell) => cell.day === dayOfMonth);
 
@@ -51,7 +48,7 @@ export class CalendarService {
     if (index !== -1) {
       this.reminders[index] = updatedReminder;
 
-      // Send notification to notify that the reminder has been updated
+      // Send notification to show that the reminder has been updated
       this.eventService.emitReminderUpdated();
     }
   }

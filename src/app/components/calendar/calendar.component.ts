@@ -131,6 +131,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
+    this.actualCurrentMonth = this.currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
     // Verify if each day is equal to the current day in the month
     this.calendarDays.forEach((day) => {
       const dayDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day.day);
@@ -148,22 +150,4 @@ export class CalendarComponent implements OnInit, OnDestroy {
   private getWeather(city: string): Observable<any> {
     return this.weatherService.getWeatherInformation(city);
   }
-
-  // No use for now
-  // private generateCalendarDays(month: Date): any[] {
-  //   const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-  //   const days = [];
-
-  //   for (let i = 1; i <= daysInMonth; i++) {
-  //     days.push({
-  //       day: i,
-  //       isOtherMonth: false,
-  //       isToday: false,
-  //       reminders: [],
-  //     });
-  //   }
-
-  //   this.actualCurrentMonth = month.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-  //   return days;
-  // }
 }

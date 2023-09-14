@@ -45,7 +45,7 @@ export class ReminderFormComponent implements OnInit {
       if (this.data.id) {
         this.calendarService.editReminder(this.data.id,updatedReminder);
       } else {
-        this.calendarService.addReminder(updatedReminder, this.data.calendarDays, this.data.currentMonth);
+        this.calendarService.addReminder(updatedReminder, this.data.calendarDays);
       }
 
       this.onClose();

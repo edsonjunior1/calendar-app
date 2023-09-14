@@ -1,8 +1,5 @@
 <mat-toolbar>
-  <button mat-icon-button>
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Jobsity challenge</span>
+  <span>Calendar App</span>
   <span class="spacer"></span>
   <button mat-button (click)="openReminderForm()">
    <mat-icon>add</mat-icon> New reminder
@@ -11,9 +8,9 @@
 
 <div class="calendar">
   <div class="calendar-header">
-    <button class="nav-button" (click)="previousMonth()">&lt;</button>
+    <button class="nav-button" (click)="previousMonth()">&lt; Previous</button>
     <h2>{{ actualCurrentMonth }}</h2>
-    <button class="nav-button" (click)="nextMonth()">&gt;</button>
+    <button class="nav-button" (click)="nextMonth()">Next &gt;</button>
   </div>
 
   <div class="calendar-days">
