@@ -76,6 +76,7 @@
         &:hover {
           background-color: #333;
         }
+
         &:disabled {
           background-color: #dbdbdb;
           color: #666;
@@ -85,12 +86,3 @@
     }
   }
 }
-
-
-// border-radius: 5px;
-// border: 1px solid #333;
-// display: flex;
-// flex-direction: row;
-// align-items: center;
-// padding: 12px 16px;
-// color: white;

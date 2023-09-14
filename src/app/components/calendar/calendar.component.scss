@@ -59,30 +59,37 @@ $light-gray: #DCDCDC;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-gap: 5px;
+    min-height: 70vh;
 
     .reminders {
       .reminder {
+        border: 1px solid #ccc;
+        background-color: #fff;
+        padding: 4px;
+        margin-bottom: 4px;
+        border-radius: 4px;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        font-size: 8px;
+        color: #333;
+
         .reminder-time {
-         color:red;
+          color: inherit;
+          font-weight: bold;
         }
 
         .reminder-city {
-          color:red;
-          // Estilo para a classe reminder-city
+          font-size: inherit;
         }
 
         .reminder-text {
-          color:red;
-          // Estilo para a classe reminder-text
+          font-size: inherit;
         }
 
         .reminder-weather {
-          color:red;
-          // Estilo para a classe reminder-weather
+          font-size: inherit;
         }
       }
     }
-
   }
 
   .calendar-cell {
@@ -110,4 +117,5 @@ $light-gray: #DCDCDC;
       font-weight: bold;
     }
   }
+
 }

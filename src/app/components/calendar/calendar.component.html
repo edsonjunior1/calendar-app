@@ -26,19 +26,21 @@
     <ng-container *ngFor="let day of calendarDays; let i = index">
       <div
         [ngClass]="{
-          'calendar-cell': true,
+          'calendar-cell': day.day !='',
           'other-month': day.isOtherMonth
         }"
         (click)="openReminderForm(day)">
         <span [ngClass]="{'other-month': day.isOtherMonth}" class="day-number">{{ day.day }}</span>
 
-        <ng-container *ngIf="day.reminders && day.reminders.length > 0">
+        <ng-container *ngIf="day.reminders.length">
           <div class="reminders">
             <div *ngFor="let reminder of day.reminders" class="reminder">
-              <div class="reminder-time">{{ reminder.dateTime | date: 'HH:mm' }}</div>
-              <div class="reminder-city">{{ reminder.city }}</div>
-              <div class="reminder-text">{{ reminder.text }}</div>
-              <div class="reminder-weather">{{ reminder.weatherInfo.main }}, {{ reminder.weatherInfo.description }}</div>
+              <div (click)="openReminderForm(reminder)">
+                <div class="reminder-text">Reminder: {{ reminder.text }}</div>
+                <div class="reminder-time">Date: {{ reminder.dateDay | date: dateViewFmt }}</div>
+                <div class="reminder-city">City: {{ reminder.city }}</div>
+                <div class="reminder-weather"> Weather Info:{{ reminder.weather?.weather[0]?.main }}, {{ reminder.weather?.weather[0]?.description }}</div>
+              </div>
             </div>
           </div>
         </ng-container>

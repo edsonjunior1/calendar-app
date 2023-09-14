@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Subject, Observable, forkJoin } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable, Subject, forkJoin } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { Reminder } from 'src/app/interfaces/reminder';
 import { CalendarService } from 'src/app/services/calendar.service';
 import { WeatherService } from 'src/app/services/weather.service';
-import { MatDialog } from '@angular/material/dialog';
 import { ReminderFormComponent } from '../reminder-form/reminder-form.component';
 
 @Component({
@@ -17,7 +17,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
   public currentMonth: Date;
   public calendarDays: any[];
   public actualCurrentMonth: string;
-  public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednsday', 'Thursday', 'Friday', 'Saturday'];
+  public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  public dateViewFmt = 'dd/MM/yyyy HH:mm';
 
   constructor(
     private calendarService: CalendarService,
@@ -47,6 +48,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.matDialog.open(ReminderFormComponent, {
       data: {
         reminder,
+        calendarDays: this.calendarDays
       },
     });
   }
@@ -61,6 +63,21 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.currentMonth.setMonth(this.currentMonth.getMonth() + monthOffset);
     this.generateCalendar();
     this.fetchAndDisplayReminders();
+  }
+
+  private updateCalendarWithReminders(reminders: Reminder[]): void {
+    reminders.forEach((reminder: Reminder) => {
+      const dayOfMonth = new Date(reminder.dateTime).getDate();
+      const calendarCell = this.calendarDays.find((cell) => cell.day === dayOfMonth);
+
+      if (calendarCell) {
+        if (!calendarCell.reminders) {
+          calendarCell.reminders = [];
+        }
+
+        calendarCell.reminders.push(reminder);
+      }
+    });
   }
 
   private fetchAndDisplayReminders(): void {
@@ -81,40 +98,41 @@ export class CalendarComponent implements OnInit, OnDestroy {
         });
 
         forkJoin(requests).subscribe((remindersWithWeather: Reminder[]) => {
-          remindersWithWeather.forEach((reminder: Reminder) => {
-            const dayOfMonth = new Date(reminder.dateTime).getDate();
-            const calendarCell = this.calendarDays.find(cell => cell.day === dayOfMonth);
-
-            if (calendarCell) {
-              if (!calendarCell.reminders) {
-                calendarCell.reminders = [];
-              }
-
-              calendarCell.reminders.push(reminder);
-            }
-          });
-
-          this.cd.detectChanges(); // Atualizar a visualização após o carregamento
+          this.updateCalendarWithReminders(remindersWithWeather);
+          this.cd.detectChanges();
         });
+
+
       });
   }
 
   private generateCalendar(): void {
-    this.calendarDays = this.generateCalendarDays(this.currentMonth);
+    const firstDayOfMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
+    const firstDayOfWeek = firstDayOfMonth.getDay();
+    const daysInMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0).getDate();
 
-    // Determinando o dia da semana para o primeiro dia do mês (0 = Domingo, 1 = Segunda, ...)
-    const firstDayOfWeek = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1).getDay();
+    this.calendarDays = [];
+
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      this.calendarDays.push({ day: '', isOtherMonth: true, isToday: false, reminders: [] });
+    }
+
+    // Adding the days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      this.calendarDays.push({
+        day: i,
+        isOtherMonth: false,
+        isToday: false,
+        reminders: [],
+      });
+    }
+
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    // Preenchendo os dias anteriores com espaços em branco
-    for (let i = 0; i < firstDayOfWeek; i++) {
-      this.calendarDays.unshift({ day: '', isOtherMonth: true, isToday: false, reminders: [] });
-    }
-
-    // Verifique se cada dia é igual à data atual no mês atual
-    this.calendarDays.forEach(day => {
+    // Verify if each day is equal to the current day in the month
+    this.calendarDays.forEach((day) => {
       const dayDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), day.day);
 
       if (
@@ -131,20 +149,21 @@ export class CalendarComponent implements OnInit, OnDestroy {
     return this.weatherService.getWeatherInformation(city);
   }
 
-  private generateCalendarDays(month: Date): any[] {
-    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-    const days = [];
+  // No use for now
+  // private generateCalendarDays(month: Date): any[] {
+  //   const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  //   const days = [];
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push({
-        day: i,
-        isOtherMonth: false,
-        isToday: false,
-        reminders: [],
-      });
-    }
+  //   for (let i = 1; i <= daysInMonth; i++) {
+  //     days.push({
+  //       day: i,
+  //       isOtherMonth: false,
+  //       isToday: false,
+  //       reminders: [],
+  //     });
+  //   }
 
-    this.actualCurrentMonth = month.toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    return days;
-  }
+  //   this.actualCurrentMonth = month.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  //   return days;
+  // }
 }
