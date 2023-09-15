@@ -53,6 +53,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
     });
   }
 
+  onReminderClick(event: Event, reminder: Reminder): void {
+    event.preventDefault();
+    this.openReminderForm(reminder);
+   }
+
   private initializeCalendar(): void {
     this.currentMonth = new Date();
     this.generateCalendar();

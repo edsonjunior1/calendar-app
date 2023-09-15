@@ -5,6 +5,7 @@ $border-color: #ccc;
 $text-color: #bbb;
 $primary-white-color: #fff;
 $light-gray: #DCDCDC;
+$dark-gray: #333;
 
 .spacer {
   flex: 1 1 auto;
@@ -30,6 +31,10 @@ $light-gray: #DCDCDC;
       border: none;
       font-size: 20px;
       cursor: pointer;
+
+      &:hover {
+        color: $secondary-color;
+      }
     }
 
     h2 {
@@ -42,7 +47,7 @@ $light-gray: #DCDCDC;
   .calendar-days {
     display: flex;
     justify-content: space-between;
-    background-color: $light-gray;
+    background-color: $secondary-color;
     padding: 5px 0;
     font-weight: bold;
     margin-bottom: 10px;
@@ -53,6 +58,8 @@ $light-gray: #DCDCDC;
     flex: 1;
     text-align: center;
     padding: 5px;
+    color: $primary-white-color;
+    font-size: 18px;
   }
 
   .calendar-grid {
@@ -61,35 +68,38 @@ $light-gray: #DCDCDC;
     grid-gap: 5px;
     min-height: 70vh;
 
-    .reminders {
-      .reminder {
-        border: 1px solid #ccc;
-        background-color: #fff;
-        padding: 4px;
-        margin-bottom: 4px;
-        border-radius: 4px;
-        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-        font-size: 8px;
-        color: #333;
+    .reminder {
+      border: 1px solid $border-color;
+      background-color: $primary-white-color;
+      padding: 4px;
+      margin: 7px 0 4px;
+      border-radius: 4px;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+      font-size: 8px;
+      color: $dark-gray;
 
-        .reminder-time {
-          color: inherit;
-          font-weight: bold;
-        }
+      &:hover {
+        border: 2px solid $primary-color;
+      }
 
-        .reminder-city {
-          font-size: inherit;
-        }
+      .reminder-time {
+        color: inherit;
+        font-weight: bold;
+      }
 
-        .reminder-text {
-          font-size: inherit;
-        }
+      .reminder-city {
+        font-size: inherit;
+      }
 
-        .reminder-weather {
-          font-size: inherit;
-        }
+      .reminder-text {
+        font-size: inherit;
+      }
+
+      .reminder-weather {
+        font-size: inherit;
       }
     }
+
   }
 
   .calendar-cell {
@@ -118,4 +128,22 @@ $light-gray: #DCDCDC;
     }
   }
 
+}
+
+.pointer {
+  cursor: pointer !important;
+}
+
+.day-number {
+  font-size: 21px;
+  font-weight: 700;
+  background-color: $light-gray;
+  border-radius: 50px;
+  padding: 0px 10px;
+  margin-bottom: 2px;
+
+  &:hover {
+    background-color: $secondary-color;
+    color: $primary-white-color;
+  }
 }
