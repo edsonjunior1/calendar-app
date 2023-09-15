@@ -3,11 +3,9 @@ import { CalendarService } from './calendar.service';
 
 class MockEventService {
   private reminderUpdatedSubject = new Subject<void>();
-
   emitReminderUpdated() {
     this.reminderUpdatedSubject.next();
   }
-
   onReminderUpdated(): Observable<void> {
     return this.reminderUpdatedSubject.asObservable();
   }
@@ -15,25 +13,51 @@ class MockEventService {
 
 class MockWeatherService {
   getWeatherInformation(city: string): Observable<any> {
-    return of(/* mock weather data here */);
+    const mockWeatherData = {
+      coord: { lon: -0.13, lat: 51.51 },
+      weather: [{ id: 801, main: 'Clouds', description: 'few clouds', icon: '02d' }],
+      base: 'stations',
+      main: { temp: 18.42, feels_like: 19.42, temp_min: 17.13, temp_max: 19.98, pressure: 1016, humidity: 67 },
+      visibility: 10000,
+      wind: { speed: 3.6, deg: 40 },
+      clouds: { all: 20 },
+      dt: 1631684417,
+      sys: { type: 2, id: 2019646, country: 'GB', sunrise: 1631640622, sunset: 1631685367 },
+      timezone: 3600,
+      id: 2643743,
+      name: 'London',
+      cod: 200,
+    };
+    return of(mockWeatherData);
   }
 }
 
-describe('CalendarService', () => {
-  let calendarService: CalendarService;
-  let calendarDays: any[];
 
-  // Set up before each test
+describe('CalendarService', () => {
+  let calendarDays: any[] = [];
+  const mockEventService = new MockEventService();
+  const mockWeatherService = new MockWeatherService();
+  let calendarService = new CalendarService(mockWeatherService as any, mockEventService as any);
+  const initialReminder =
+  {
+    "reminder": {
+      "day": 1,
+      "isOtherMonth": false,
+      "isToday": false,
+      "reminders": []
+    },
+    "id": "34c35212-6f26-492e-900f-5bee0474c33e",
+    "text": "teste calendar",
+    "dateDay": new Date("2023-09-01"),
+    "dateTime": "10:46",
+    "city": "London"
+  };
+
   beforeEach(() => {
-    calendarService = new CalendarService();
+    calendarService = new CalendarService(mockWeatherService as any, mockEventService as any);
   });
 
-  it('should add a reminder to the service', () => {
-    // Mock the necessary dependencies like WeatherService and EventService
-    const mockWeatherService = { getWeatherInformation: jest.fn() };
-    const mockEventService = { emitReminderUpdated: jest.fn() };
-
-    // Create a test data object
+  it('should add a reminder to the service', (done) => {
     const reminderData =
     {
       "reminder": {
@@ -55,18 +79,20 @@ describe('CalendarService', () => {
       reminders: [],
     })
 
-    // Call the addReminder method
-    calendarService.addReminder(reminderData, calendarDays);
 
-    // Perform assertions
-    expect(mockWeatherService.getWeatherInformation).toHaveBeenCalled();
-    // Add more assertions as needed
+
+    calendarService.addReminder(reminderData, calendarDays);
+    calendarService.calendarDays$.subscribe((addedReminder) => {
+      expect(mockWeatherService.getWeatherInformation).toHaveBeenCalled();
+      expect(addedReminder.length).toBeGreaterThan(0);
+      done();
+    });
   });
 
-  it('should edit a reminder in the service', () => {
-    // Create a test reminder and reminder ID
-    const reminderId = 'e77f9be7-b4ad-4020-8656-c914de40fa34';
-    const updatedReminder = {
+  it('should edit a reminder in the service', (done) => {
+    const reminderId = '34c35212-6f26-492e-900f-5bee0474c33e';
+    const reminderData =
+    {
       "reminder": {
         "day": 1,
         "isOtherMonth": false,
@@ -79,33 +105,53 @@ describe('CalendarService', () => {
       "dateTime": "10:46",
       "city": "London"
     };
+    const updatedReminder = {
+      "reminder": {
+        "day": 1,
+        "isOtherMonth": false,
+        "isToday": false,
+        "reminders": []
+      },
+      "id": reminderId,
+      "text": "updated reminder",
+      "dateDay": new Date("2023-09-01"),
+      "dateTime": "11:46",
+      "city": "Chelsea"
+    };
 
-    // Call the editReminder method
+    calendarService.addReminder(reminderData, calendarDays);
     calendarService.editReminder(reminderId, updatedReminder);
 
-    // Perform assertions
-    // Check if the reminder is updated correctly in the service
+    calendarService.calendarDays$.subscribe((updatedReminder) => {
+      const editedReminder = updatedReminder.find(r => r.id === reminderId);
+      expect(editedReminder).toBeDefined();
+
+      done();
+    });
+
   });
 
-  it('should list reminders for a specific month', () => {
-    // Create a test date object for the desired month
-    const testDate = new Date(/* Provide a date for the desired month */);
+  it('should list reminders for a specific month', (done) => {
+    const testDate = new Date("2023-09-01");
 
-    // Call the list method with the test date
-    const reminders$ = calendarService.list(testDate);
+    calendarService.list(testDate).subscribe(res => {
+      expect(res.length).toBeGreaterThan(0);
 
-    // Subscribe to the observable and perform assertions
-    reminders$.subscribe((reminders) => {
-      // Check if the returned reminders match the expected ones for the month
+      done();
     });
   });
 
-  it('should delete a reminder from the service', () => {
-    const reminderId = 'e77f9be7-b4ad-4020-8656-c914de40fa34';
+  it('should delete a reminder from the service', (done) => {
+    const reminderId = '34c35212-6f26-492e-900f-5bee0474c33e';
+    calendarService.addReminder(initialReminder, calendarDays);
 
     calendarService.delete(reminderId);
 
-    // Perform assertions
-    // Check if the reminder is removed correctly from the service
+    calendarService.calendarDays$.subscribe((reminder) => {
+      const deletedReminder = reminder.find((r) => r.id === reminderId);
+      expect(deletedReminder).toBeUndefined();
+
+      done();
+    });
   });
 });

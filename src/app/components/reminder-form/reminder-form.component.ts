@@ -14,7 +14,7 @@ export class ReminderFormComponent implements OnInit {
   form: FormGroup;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Reminder,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<ReminderFormComponent>,
     private formBuilder: FormBuilder,
     private calendarService: CalendarService
@@ -26,11 +26,11 @@ export class ReminderFormComponent implements OnInit {
 
   private buildForm(): void {
     this.form = this.formBuilder.group({
-      id: [this.data.id || uuidv4()],
-      text: [this.data.text || '', [Validators.required, Validators.maxLength(30)]],
-      dateDay: [this.data.dateDay || '', [Validators.required]],
-      dateTime: [this.data.dateTime || '', [Validators.required]],
-      city: [this.data.city || '']
+      id: [this.data.reminder?.id || uuidv4()],
+      text: [this.data.reminder?.text || '', [Validators.required, Validators.maxLength(30)]],
+      dateDay: [this.data.reminder?.dateDay || '', [Validators.required]],
+      dateTime: [this.data.reminder?.dateTime || '', [Validators.required]],
+      city: [this.data.reminder?.city || '']
     });
   }
 
@@ -42,7 +42,7 @@ export class ReminderFormComponent implements OnInit {
       };
 
       // checking if already exists
-      if (this.data.id) {
+      if (this.data?.reminder?.id) {
         this.calendarService.editReminder(this.data.id,updatedReminder);
       } else {
         this.calendarService.addReminder(updatedReminder, this.data.calendarDays);

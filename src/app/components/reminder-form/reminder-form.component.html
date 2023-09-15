@@ -1,8 +1,8 @@
 <section class="reminder-modal-backdrop">
   <div class="reminder-form">
     <div class="modal-header">
-      <h2 *ngIf="!this.data.id">Add Reminder</h2>
-      <h2 *ngIf="this.data.id">Edit Reminder</h2>
+      <h2 *ngIf="!this.data?.reminder?.id">Add Reminder</h2>
+      <h2 *ngIf="this.data?.reminder?.id">Edit Reminder</h2>
       <button mat-icon-button (click)="onClose()">
         <mat-icon>close</mat-icon>
       </button>
