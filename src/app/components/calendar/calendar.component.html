@@ -1,13 +1,52 @@
 <mat-toolbar>
-  <button mat-icon-button>
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>Jobsity challenge</span>
+  <span>Calendar App</span>
   <span class="spacer"></span>
   <button mat-button (click)="openReminderForm()">
    <mat-icon>add</mat-icon> New reminder
  </button>
 </mat-toolbar>
 
-<!-- Create the calendar here -->
-<!-- ======================== -->
+<div class="calendar">
+  <div class="calendar-header">
+    <button class="nav-button" (click)="previousMonth()">&lt; Previous</button>
+    <h2>{{ actualCurrentMonth }}</h2>
+    <button class="nav-button" (click)="nextMonth()">Next &gt;</button>
+  </div>
+
+  <div class="calendar-days">
+    <ng-container *ngFor="let day of daysOfWeek">
+      <div class="calendar-day">{{ day }}</div>
+    </ng-container>
+  </div>
+
+  <div class="calendar-grid">
+    <ng-container *ngFor="let day of calendarDays; let i = index">
+      <div class="father-container"
+        [ngClass]="{
+          'calendar-cell': day.day !='',
+          'other-month': day.isOtherMonth
+        }">
+        <span (click)="openReminderForm(day)" [ngClass]="{'other-month': day.isOtherMonth, 'day-number': !!day.day}" class="pointer">{{ day.day }}</span>
+
+        <ng-container *ngIf="day.reminders.length && day.reminders[0].id">
+            <div *ngFor="let reminder of day.reminders" class="reminder pointer" (click)="onReminderClick($event, reminder)">
+                <div class="reminder-text">
+                  <b>Reminder:</b> {{ reminder.text }}
+                </div>
+                <div class="reminder-time">
+                  <b>Date: </b> {{ reminder.dateDay | date: dateViewFmt }}
+                </div>
+                <div class="reminder-city">
+                  <b>City: </b> {{ reminder.city }}
+                </div>
+                <div class="reminder-weather">
+                  <b>Weather Info: </b>{{ reminder.weather?.weather[0]?.main }}, {{ reminder.weather?.weather[0]?.description }}
+                </div>
+            </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+
+</div>
+
