@@ -28,7 +28,7 @@
         }">
         <span (click)="openReminderForm(day)" [ngClass]="{'other-month': day.isOtherMonth, 'day-number': !!day.day}" class="pointer">{{ day.day }}</span>
 
-        <ng-container *ngIf="day.reminders.length">
+        <ng-container *ngIf="day.reminders.length && day.reminders[0].id">
             <div *ngFor="let reminder of day.reminders" class="reminder pointer" (click)="onReminderClick($event, reminder)">
                 <div class="reminder-text">
                   <b>Reminder:</b> {{ reminder.text }}

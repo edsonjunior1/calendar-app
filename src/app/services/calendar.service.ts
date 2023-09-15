@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Reminder } from '../interfaces/reminder';
 import { WeatherService } from './weather.service';
 import { EventService } from './eventService.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,6 @@ import { EventService } from './eventService.service';
 export class CalendarService {
   private reminders: Reminder[] = [];
   private calendarDaysSubject = new BehaviorSubject<Reminder[]>([]);
-  private remindersUpdatedSubject = new BehaviorSubject<void>(null);
   calendarDays$ = this.calendarDaysSubject.asObservable();
 
   constructor(
@@ -45,30 +45,47 @@ export class CalendarService {
   }
 
   editReminder(reminderId: string, updatedReminder: Reminder | any, calendarD: any[]): void {
-    //TODO: CHAMAR NOVAMENTE O WEATHER SERVICE E CHECAR SE ESTÁ MUDANDO DE DATA PARA GERAR UM NOVO ID E APAGAR O ANTERIOR
+    this.weatherService.getWeatherInformation(updatedReminder.city).subscribe((newWeatherInfo) => {
+      const index = this.reminders.findIndex((r) => r.id === reminderId);
+      if (index !== -1) {
+        const originalReminder = { ...this.reminders[index] };
 
-    const index = this.reminders.findIndex((r) => r.id === reminderId);
-    if (index !== -1) {
-      const originalReminder = { ...this.reminders[index] };
+        const dayOfMonth = new Date(updatedReminder.dateDay + `T${updatedReminder.dateTime}:00`).getDate();
+        const calendarCell = calendarD.find((cell) => cell.day === dayOfMonth);
 
-      const dayOfMonth = new Date(updatedReminder.dateDay + `T${updatedReminder.dateTime}:00`).getDate();
-      const calendarCell = calendarD.find((cell) => cell.day === dayOfMonth);
+        if (calendarCell) {
+          if (originalReminder.dateDay !== updatedReminder.dateDay) {
+            const oldReminderIndex = calendarCell.reminders.findIndex((r) => r.id === reminderId);
+            this.delete(reminderId);
+            if (oldReminderIndex !== -1) {
+              calendarCell.reminders.splice(oldReminderIndex, 1);
+            }
 
-      if (calendarCell) {
-        calendarCell.reminders[index] = {
-          ...calendarCell.reminders[index],
-          text: updatedReminder.text,
-          id: updatedReminder.id,
-          dateDay: updatedReminder.dateDay,
-          dateTime: updatedReminder.dateTime,
-          city: updatedReminder.city,
-          weather: updatedReminder.reminder.weather
-        };
+            const updatedReminderObj = {
+              text: updatedReminder.text,
+              id: uuidv4(),
+              dateDay: updatedReminder.dateDay,
+              dateTime: updatedReminder.dateTime,
+              city: updatedReminder.city,
+              weather: newWeatherInfo,
+            };
+            calendarCell.reminders[index] = updatedReminderObj;
+          } else {
+            const updatedReminderObj = {
+              ...calendarCell.reminders[index],
+              text: updatedReminder.text,
+              dateTime: updatedReminder.dateTime,
+              city: updatedReminder.city,
+              weather: newWeatherInfo,
+            };
+            calendarCell.reminders[index] = updatedReminderObj;
+          }
+        }
+
+        this.eventService.emitReminderUpdated();
+        this.calendarDaysSubject.next(calendarCell);
       }
-
-      this.eventService.emitReminderUpdated();
-      this.calendarDaysSubject.next(calendarCell);
-    }
+    });
   }
 
 
@@ -96,9 +113,5 @@ export class CalendarService {
       this.reminders.splice(index, 1);
       this.eventService.emitReminderUpdated();
     }
-  }
-
-  remindersUpdated$(): Observable<void> {
-    return this.remindersUpdatedSubject.asObservable();
   }
 }

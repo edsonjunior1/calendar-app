@@ -20,7 +20,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
   public dateViewFmt = 'dd/MM/yyyy';
 
   private onDestroy$ = new Subject<boolean>();
-  private remindersUpdatedSubscription: Subscription;
 
   constructor(
     private calendarService: CalendarService,
@@ -31,16 +30,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeCalendar();
-    this.remindersUpdatedSubscription = this.calendarService.remindersUpdated$().subscribe(() => {
-      this.initializeCalendar();
-      this.fetchAndDisplayReminders();
-    })
   }
 
   ngOnDestroy(): void {
     this.onDestroy$.next(true);
     this.onDestroy$.complete();
-    this.remindersUpdatedSubscription.unsubscribe();
   }
 
   previousMonth(): void {
