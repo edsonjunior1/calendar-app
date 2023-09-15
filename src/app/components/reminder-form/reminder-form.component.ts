@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Reminder } from 'src/app/interfaces/reminder';
@@ -17,7 +17,8 @@ export class ReminderFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<ReminderFormComponent>,
     private formBuilder: FormBuilder,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -43,11 +44,12 @@ export class ReminderFormComponent implements OnInit {
 
       // checking if already exists
       if (this.data?.reminder?.id) {
-        this.calendarService.editReminder(this.data.id,updatedReminder);
+        this.calendarService.editReminder(this.data?.reminder?.id, updatedReminder, this.data.calendarDays);
       } else {
         this.calendarService.addReminder(updatedReminder, this.data.calendarDays);
       }
 
+      this.cd.detectChanges();
       this.onClose();
     }
   }

@@ -4,8 +4,7 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jest",
-      "node",
-      "zone.js/testing"
+      "node"
     ]
   },
   "files": [

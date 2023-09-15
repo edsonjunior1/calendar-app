@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'jest-preset-angular',
-  setupFilesAfterEnv: ['<rootDir>/setupJest.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   moduleNameMapper: {
     '^@app/(.*)$': '<rootDir>/src/app/$1',
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',
@@ -15,9 +15,16 @@ module.exports = {
   coveragePathIgnorePatterns: ['/node_modules/', '/testing/'],
   globals: {
     'ts-jest': {
-      tsConfig: '<rootDir>/tsconfig.spec.json',
-      stringifyContentPathRegex: '\\.(html|svg)$',
+      tsconfig: '<rootDir>/tsconfig.spec.json',
+      stringifyContentPathRegex: '\\.html$',
+      astTransformers: {
+        before: [
+          'jest-preset-angular/build/InlineFilesTransformer',
+          'jest-preset-angular/build/StripStylesTransformer',
+        ],
+      },
     },
   },
-  setupFiles: ["zone.js/dist/zone-testing"]
+  setupFiles: ["zone.js/dist/zone-testing.js"],
+  globalSetup: 'jest-preset-angular/global-setup'
 };

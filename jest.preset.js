@@ -1,5 +1,1 @@
-const preset = require('@angular-builders/jest/presets/default');
-
-module.exports = {
-  ...preset
-};
+module.exports = require('@angular-builders/jest/dist/jest-config/default-config');

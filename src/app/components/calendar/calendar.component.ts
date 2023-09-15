@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subject, forkJoin } from 'rxjs';
+import { Observable, Subject, Subscription, forkJoin } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { Reminder } from 'src/app/interfaces/reminder';
 import { CalendarService } from 'src/app/services/calendar.service';
@@ -13,12 +13,14 @@ import { ReminderFormComponent } from '../reminder-form/reminder-form.component'
   styleUrls: ['./calendar.component.scss']
 })
 export class CalendarComponent implements OnInit, OnDestroy {
-  private onDestroy$ = new Subject<boolean>();
   public currentMonth: Date;
   public calendarDays: any[];
   public actualCurrentMonth: string;
   public daysOfWeek: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  public dateViewFmt = 'dd/MM/yyyy HH:mm';
+  public dateViewFmt = 'dd/MM/yyyy';
+
+  private onDestroy$ = new Subject<boolean>();
+  private remindersUpdatedSubscription: Subscription;
 
   constructor(
     private calendarService: CalendarService,
@@ -29,11 +31,16 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeCalendar();
+    this.remindersUpdatedSubscription = this.calendarService.remindersUpdated$().subscribe(() => {
+      this.initializeCalendar();
+      this.fetchAndDisplayReminders();
+    })
   }
 
   ngOnDestroy(): void {
     this.onDestroy$.next(true);
     this.onDestroy$.complete();
+    this.remindersUpdatedSubscription.unsubscribe();
   }
 
   previousMonth(): void {

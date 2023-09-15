@@ -30,10 +30,18 @@
 
         <ng-container *ngIf="day.reminders.length">
             <div *ngFor="let reminder of day.reminders" class="reminder pointer" (click)="onReminderClick($event, reminder)">
-                <div class="reminder-text">Reminder: {{ reminder.text }}</div>
-                <div class="reminder-time">Date: {{ reminder.dateDay | date: dateViewFmt }}</div>
-                <div class="reminder-city">City: {{ reminder.city }}</div>
-                <div class="reminder-weather"> Weather Info:{{ reminder.weather?.weather[0]?.main }}, {{ reminder.weather?.weather[0]?.description }}</div>
+                <div class="reminder-text">
+                  <b>Reminder:</b> {{ reminder.text }}
+                </div>
+                <div class="reminder-time">
+                  <b>Date: </b> {{ reminder.dateDay | date: dateViewFmt }}
+                </div>
+                <div class="reminder-city">
+                  <b>City: </b> {{ reminder.city }}
+                </div>
+                <div class="reminder-weather">
+                  <b>Weather Info: </b>{{ reminder.weather?.weather[0]?.main }}, {{ reminder.weather?.weather[0]?.description }}
+                </div>
             </div>
         </ng-container>
       </div>
