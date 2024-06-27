@@ -1,10 +1,6 @@
-<div align="center">
-    <img src="https://storage.googleapis.com/public-jobsity-bucket/jobsity_logo_small.png"/>
-</div>
+# Angular Calendar App
 
-# Angular Challenge Calendar App
-
-This Angular Challenge Calendar App is a simple web application that allows users to manage their reminders on a monthly calendar view. Users can add, edit, as well as view weather information associated with their reminders.
+This Angular Calendar App is a simple web application that allows users to manage their reminders on a monthly calendar view. Users can add, edit, as well as view weather information associated with their reminders.
 
 ![Screenshot](./src/assets/CalendarApp-Screenshot.png)
 
